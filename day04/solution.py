@@ -16,18 +16,17 @@ with open(infile) as fin:
 # for l in lines:
 #     print(l)
 
-copies = {}
-for c in range(1, len(lines) + 1):
-    copies[c] = 1
+copies = defaultdict(int)
 
 for i, l in enumerate(lines):
     card = i + 1
+    copies[card] += 1
     _, rest = l.split(':')
     wins, my = rest.split('|')
     wins = wins.split()
     my = my.split()
 
-    hits = len([ 1 for m in my if m in wins])
+    hits = len(set(my) & set(wins))
 
     if hits == 0:
         continue
