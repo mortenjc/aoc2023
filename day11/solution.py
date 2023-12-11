@@ -1,7 +1,6 @@
 #!/usr/local/bin/python3
 
 import sys
-import math
 
 
 infile = sys.argv[1] if len(sys.argv) > 1 else 'test.txt'
@@ -47,7 +46,7 @@ for part in [1,2]:
     # distances
     for g1 in range(len(gal)-1):
         for g2 in range(g1 + 1, len(gal)):
-            dist = math.fabs(gal[g1][0]- gal[g2][0]) + math.fabs(gal[g1][1]- gal[g2][1])
+            dist = abs(gal[g1][0]- gal[g2][0]) + abs(gal[g1][1]- gal[g2][1])
             if part == 1:
                 S1 += int(dist)
             else:
