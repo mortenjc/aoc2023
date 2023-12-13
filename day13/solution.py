@@ -75,7 +75,6 @@ for ng, G in enumerate(groups):
     for r in range(RR):
         if done:
             continue
-
         for c in range(CC):
             C = [[ch for ch in l] for l in G.split('\n')]
             if C[r][c] == '.':
