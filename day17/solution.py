@@ -14,10 +14,6 @@ S2 = 0
 with open(infile) as fin:
     lines = ((fin.read().strip()).split('\n'))
 
-G = [[int(x) for x in l] for l in lines]
-R = len(G)
-C = len(G[0])
-
 
 dirs = [0, 1 ,2 , 3] # left, down, right, up
 dirval = [(0,-1), (1,0), (0,1), (-1,0)]

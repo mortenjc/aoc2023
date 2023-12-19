@@ -1,8 +1,6 @@
 #!/usr/local/bin/python3
 
 import sys
-#from collections import deque
-#import heapq
 
 infile = sys.argv[1] if len(sys.argv) > 1 else 'test.txt'
 print("<<{}>>".format(infile))

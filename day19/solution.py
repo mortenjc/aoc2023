@@ -1,8 +1,6 @@
 #!/usr/local/bin/python3
 
 import sys
-#from collections import deque
-#import heapq
 
 def printg(G):
     for l in G:

@@ -1,12 +1,6 @@
 #!/usr/local/bin/python3
 
 import sys
-#from collections import deque
-#import heapq
-
-def printg(G):
-    for l in G:
-        print(''.join(l))
 
 infile = sys.argv[1] if len(sys.argv) > 1 else 'test.txt'
 print("<<{}>>".format(infile))
