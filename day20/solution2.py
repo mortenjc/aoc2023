@@ -59,10 +59,10 @@ for module in MODS:
 for m in MODS:
     STATE[m] = 0 # all starts in off
 
-print(MODS)
-print(DST)
-print(IN)
-print(TYPE)
+# print(MODS)
+# print(DST)
+# print(IN)
+# print(TYPE)
 
 vals = {0:'low', 1:'high'}
 
@@ -81,42 +81,50 @@ def remember(module):
     else:
         return False
 
+watch = {'sh':[], 'mz':[], 'bh':[], 'jf':[]}
 
 Q = []
 pc = defaultdict(int)
-
-for i in range(1000):
+for i in range(100000000):
     Q.append(('button', 'broadcaster', 0))
     while Q:
         src, dest, val = Q.pop(0)
-        print(f'{src} -{vals[val]}-> {dest}')
         pc[val] += 1
+        if dest == 'rx' and val == 0 and S2 == 0:
+            S2 = i + 1
 
         dtype = TYPE[dest]
+        # flipflop
         if dtype == '%':
             if val == 1:
                 continue
             STATE[dest] = (STATE[dest] + 1)%2
             newval = STATE[dest]
-            #print(f'update ff, newval {newval}')
-
+        # conjunction
         elif dtype == '&':
             MEM[dest][src] = val
             ret = remember(dest)
             if ret:
+                if dest in watch:
+                    watch[dest].append(i)
+
                 newval = 0
             else:
                 newval = 1
-            print(f'   update conj, new val {newval}')
+        # default
         else:
             newval = val
-            #print(f'broadcast, newval {newval}')
 
         for t in DST[dest]:
             Q.append((dest, t, newval))
 
-print(pc[0], pc[1])
-S1 = pc[0] * pc[1]
+    if i == 999:
+        S1 = pc[0] * pc[1]
+        print(pc[0] * pc[1])
+
+    if i % 1000 == 0:
+        print(watch)
+
 
 
 print("------------- A -------------")
