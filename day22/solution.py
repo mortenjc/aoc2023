@@ -4,9 +4,6 @@ from collections import defaultdict
 
 import sys
 
-def printg(G):
-    for l in G:
-        print(''.join(l))
 
 infile = sys.argv[1] if len(sys.argv) > 1 else 'test.txt'
 print("<<{}>>".format(infile))
@@ -18,86 +15,69 @@ with open(infile) as fin:
     lines = ((fin.read().strip()).split('\n'))
 
 
-nxy = 10
-nzz = 14
+BS = []
 
-G = [[[-1 for k in range(nxy)] for j in range(nxy)] for i in range(nzz)]
-
-
-def printg():
-    for z in range(nzz-1, 0, -1):
-        for x in range(nxy):
-            for y in range(nxy):
-                if G[x][y][nzz - 1 - z] != -1:
-                    print(x, y, z, G[x][y][nzz - 1, z])
-
-
-def canadd(i, x,y,z, dx,dy,dz):
-    res = True
-    l = max(dx, dy, dz)
-    dx = dx//l
-    dy = dy//l
-    dz = dz//l
-    for i in range(l):
-        x += dx
-        y += dy
-        z += dz
-        if G[x][y][z] != -1 and G[nx][ny][nz] != i:
-            print(f'G[{x}][{y}][{nzz-1-z}] occupied by {G[x][y][nzz-1-z]}')
-            res = False
-            break
-    return res
-
-
-def doadd(i, x,y,z,dx,dy,dz):
-    print('doadd d*', dx, dy, dz)
-    l = max(dx, dy, dz)
-    dx = dx//l
-    dy = dy//l
-    dz = dz//l
-    for i in range(l):
-        nx = x + i
-        ny = y + i
-        nz = z + i
-        assert G[nx][ny][nz] == -1 or G[nx][ny][nz] == i
-        G[x][y][z] = -1
-        G[nx][ny][nz] = i
-
-
-blk = []
 for i, l in enumerate(lines):
-    st, ed = l.split('~')
-    sx, sy, sz = list(map(int, st.split(',')))
-    ex, ey, ez = list(map(int, ed.split(',')))
-
-    print(ex-sx, ey-sy, ez-sz, '-', sx, sy, sz, ex, ey, ez)
-    blk.append((sx, sy, sz, ex, ey, ez))
-
-
-# lowest first
-sorted(blk,  key=lambda x: x[2])
-i = -1
-while blk:
-    i+=1
-    # get next block, sorted by z low to high
-    sx, sy, sz, ex, ey, ez = blk.pop(0)
-    print('='*80)
-    print('pop', sx, sy, sz, ex, ey, ez)
-    last = sz
-    for z in range(sz, 0, -1):
-        if canadd(i, sx, sy, z, ex-sx, ey-sy, ez-sz):
-            #print(z, 'can add', sx, sy, z, ex, ey, z + ez-sz+1)
-            last = z
-        else:
-            break
-            #print(z, 'cant add')
-    if last == sz:
-        print('block stays put')
+    A, B = l.split('~')
+    be = list(map(int, A.split(',')))
+    ed = list(map(int, B.split(',')))
+    dir = [a-b for a,b in zip(ed,be)]
+    l = max(dir)
+    if l != 0:
+        dir = [a//l for a in dir]
     else:
-        print(f'move block {i} from {sz} to {last}')
-        doadd(i, sx, sy, last, ex-sx, ey-sy, ez-sz)
+        dir = [0,0,0]
 
-printg()
+    B = []
+    for j in range(l+1):
+        pt = tuple([a + j*b for a,b in zip(be, dir)])
+        B.append(pt)
+    BS.append(B)
+
+
+def moved(blocks):
+    moved = set()
+    SEEN = set()
+    for B in blocks:
+        for (x,y,z) in B:
+            SEEN.add((x,y,z))
+
+    i = 0
+    while True:
+        any = False
+        for j, B in enumerate(blocks):
+            for (x,y,z) in B:
+                if z<2 or ((x,y,z-1) in SEEN and (x,y,z-1) not in B):
+                    break
+            else:
+                moved.add(j)
+                any = True
+                for (x,y,z) in blocks[j]:
+                    SEEN.remove((x,y,z))
+                    SEEN.add((x,y,z-1))
+                A = [(x, y, z-1) for x,y,z in B]
+                assert A != blocks[j]
+                blocks[j] = A
+
+        if not any:
+            return i, len(moved), blocks
+        i += 1
+
+
+A = [b for b in BS]
+res, mv, NA = moved(A)
+if res != 0:
+    print('A settled at', res)
+res, mv, NA2 = moved(NA)
+assert res == 0 and mv == 0
+
+for i, B in enumerate(NA):
+    A = [b for b in NA if b != B]
+    res, mv, _ = moved(A)
+    S2 += mv
+    if res == 0:
+        S1 += 1
+
 
 print("------------- A -------------")
 print('S1 ', S1)
