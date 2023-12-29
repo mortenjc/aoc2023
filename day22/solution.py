@@ -23,10 +23,8 @@ for i, l in enumerate(lines):
     ed = list(map(int, B.split(',')))
     dir = [a-b for a,b in zip(ed,be)]
     l = max(dir)
-    if l != 0:
-        dir = [a//l for a in dir]
-    else:
-        dir = [0,0,0]
+    dir = [a//l if l != 0 else 0 for a in dir]
+
 
     B = []
     for j in range(l+1):
@@ -55,25 +53,19 @@ def moved(blocks):
                 for (x,y,z) in blocks[j]:
                     SEEN.remove((x,y,z))
                     SEEN.add((x,y,z-1))
-                A = [(x, y, z-1) for x,y,z in B]
-                assert A != blocks[j]
-                blocks[j] = A
+                blocks[j] = [(x, y, z-1) for x,y,z in B]
 
         if not any:
             return i, len(moved), blocks
         i += 1
 
 
-A = [b for b in BS]
-res, mv, NA = moved(A)
+res, mv, NA = moved([b for b in BS])
 if res != 0:
-    print('A settled at', res)
-res, mv, NA2 = moved(NA)
-assert res == 0 and mv == 0
+    print('blocks settled after', res, 'iterations')
 
 for i, B in enumerate(NA):
-    A = [b for b in NA if b != B]
-    res, mv, _ = moved(A)
+    res, mv, _ = moved([b for b in NA if b != B])
     S2 += mv
     if res == 0:
         S1 += 1
