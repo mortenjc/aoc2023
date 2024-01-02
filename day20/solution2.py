@@ -81,17 +81,26 @@ def remember(module):
     else:
         return False
 
-watch = {'sh':[], 'mz':[], 'bh':[], 'jf':[]}
+watch = {'sh':0, 'mz':0, 'bh':0, 'jf':0}
 
 Q = []
+DONE = set()
+PREV = {}
+COUNT = defaultdict(int)
 pc = defaultdict(int)
 for i in range(100000000):
     Q.append(('button', 'broadcaster', 0))
     while Q:
         src, dest, val = Q.pop(0)
         pc[val] += 1
-        if dest == 'rx' and val == 0 and S2 == 0:
-            S2 = i + 1
+
+        if val == 0:
+            if dest in watch and dest in PREV and COUNT[dest]==2:
+                print('dest', dest, 'cycle', i+1 - PREV[dest])
+
+            PREV[dest] = i + 1
+            COUNT[dest] += 1
+
 
         dtype = TYPE[dest]
         # flipflop
@@ -104,10 +113,7 @@ for i in range(100000000):
         elif dtype == '&':
             MEM[dest][src] = val
             ret = remember(dest)
-            if ret:
-                if dest in watch:
-                    watch[dest].append(i)
-
+            if ret == 0:
                 newval = 0
             else:
                 newval = 1

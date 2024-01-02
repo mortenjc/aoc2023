@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
 from collections import deque
+from collections import defaultdict
 
 import sys
 
@@ -29,21 +30,70 @@ assert G[R-1][C-2] == '.'
 
 N = []
 
-for r in range(R):
-    for c in range(C):
-        if G[r][c] == '#':
-            continue
-        print('testing', r, c)
-        count = 0
-        for dr, dc in dirs:
-            if 0<=r+dr<R and 0<=c+dc<C and G[r+dr][c+dc] != '#':
-                print(r+dr, c+dc , 'is good')
-                count +=1
-        if count == 3:
-            N.append((r,c))
+Q = deque()
+V = defaultdict(set)
+#         d  r  c  vr  vc
+Q.append((0, 0, 1, 0, 1))
+SEEN = set()
+while Q:
+    d, r, c, vr, vc = Q.popleft()
+    if (r,c) in SEEN:
+        continue
 
-# Build vertices
-#TBD
+    if r == R-1 and c == C-2:
+        V[(r,c)].add((vr, vc, d))
+        V[(vr,vc)].add((r, c, d))
+
+    SEEN.add((r, c))
+
+    f = 0
+    for dr, dc in [(1,0),(-1,0),(0,1),(0,-1)]:
+        rr = r + dr
+        cc = c + dc
+        if 0<=rr<R and 0<=cc<C and G[rr][cc] != '#':
+            f +=1
+    if f == 3:
+        V[(vr,vc)].add((r,c,d))
+        V[(r,c)].add((vr,vc,d))
+        print(f'added vertex', vr, vc, '->r', r,c, 'dist', d)
+        vr = r
+        vc = c
+        d = -1
+    else:
+        pass
+        #print('move forward to', rr, cc, d)
+
+    for dr, dc in [(1,0),(-1,0),(0,1),(0,-1)]:
+        rr = r + dr
+        cc = c + dc
+        if 0<=rr<R and 0<=cc<C and G[rr][cc] != '#':
+            Q.append((d+1, rr, cc, vr, vc))
+
+
+print(V)
+# Now to DFS
+
+Q = deque()
+# edge   r  c  d
+Q.push((0, 1, 0, []))
+while Q:
+    r, c, d, seen = Q.popleft()
+    print(f'pop ({r},{c}, cost {d}, {seen})')
+
+    if r == R-1 and c == C-2:
+        print('goal', r, c, d)
+        continue
+
+    A = [s for s in seen]
+    A.append((r,c))
+    A = list(set(A))
+
+    for nr, nc, cost in V[(r,c)]:
+        if (nr, nc) in A:
+            continue
+        Q.append((nr, nc, d + cost, A))
+
+
 
 
 
