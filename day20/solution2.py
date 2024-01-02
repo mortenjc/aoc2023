@@ -4,6 +4,8 @@ from collections import defaultdict
 
 import sys
 
+from math import lcm
+
 def printg(G):
     for l in G:
         print(''.join(l))
@@ -84,22 +86,25 @@ def remember(module):
 watch = {'sh':0, 'mz':0, 'bh':0, 'jf':0}
 
 Q = []
-DONE = set()
 PREV = {}
 COUNT = defaultdict(int)
 pc = defaultdict(int)
-for i in range(100000000):
+RES = []
+for i in range(1, 10**9):
     Q.append(('button', 'broadcaster', 0))
     while Q:
         src, dest, val = Q.pop(0)
         pc[val] += 1
 
         if val == 0:
-            if dest in watch and dest in PREV and COUNT[dest]==2:
-                print('dest', dest, 'cycle', i+1 - PREV[dest])
-
-            PREV[dest] = i + 1
+            if dest in watch and COUNT[dest] == 2 and dest in PREV:
+                print(i, dest, val, PREV[dest], i - PREV[dest])
+                RES.append(i - PREV[dest])
+            PREV[dest] = i
             COUNT[dest] += 1
+        if len(RES) == 4:
+            print(lcm(*RES))
+            sys.exit(0)
 
 
         dtype = TYPE[dest]
@@ -113,7 +118,7 @@ for i in range(100000000):
         elif dtype == '&':
             MEM[dest][src] = val
             ret = remember(dest)
-            if ret == 0:
+            if ret:
                 newval = 0
             else:
                 newval = 1
@@ -124,7 +129,7 @@ for i in range(100000000):
         for t in DST[dest]:
             Q.append((dest, t, newval))
 
-    if i == 999:
+    if i == 1000:
         S1 = pc[0] * pc[1]
         print(pc[0] * pc[1])
 
