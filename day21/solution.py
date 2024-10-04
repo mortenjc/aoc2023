@@ -17,6 +17,7 @@ S2 = 0
 with open(infile) as fin:
     lines = ((fin.read().strip()).split('\n'))
 
+# Solution for part 1
 
 G = [[x for x in l] for l in lines]
 R = len(G)

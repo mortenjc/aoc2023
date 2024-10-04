@@ -17,10 +17,13 @@ S2 = 0
 with open(infile) as fin:
     lines = ((fin.read().strip()).split('\n'))
 
+# Didn't solve part 2 - nonworking code
 
 G = [[x for x in l] for l in lines]
 R = len(G)
 C = len(G[0])
+
+print('R', R, 'C', C)
 
 start = (0,0)
 sq = 0
